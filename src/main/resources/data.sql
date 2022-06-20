@@ -9,9 +9,9 @@ insert into products (name, ean_code, price) values ('Product2','221234',2000);
 insert into products (name, ean_code, price) values ('Product3','33331234',3000);
 insert into products (name, ean_code, price) values ('Product4','43331444',4000);
 
-insert into orders ( date, shipped, shipping_date,buyer_id,Seller_id) values ('2022-05-21',true,'2022-05-30',1,3);
-insert into orders ( date, shipped, shipping_date,buyer_id,Seller_id) values ('2022-06-21',false,null,1,4);
-insert into orders ( date, shipped, shipping_date,buyer_id,Seller_id) values ('2022-07-01',false,null,2,3);
+insert into orders ( date, shipped, shipping_date,seller_id,buyer_id) values ('2022-05-21',true,'2022-05-30',1,3);
+insert into orders ( date, shipped, shipping_date,seller_id,buyer_id) values ('2022-06-21',false,null,1,4);
+insert into orders ( date, shipped, shipping_date,seller_id,buyer_id) values ('2022-07-01',false,null,2,3);
 
 
 insert into orderitems ( quantity, selling_price, order_id,product_id) values ( 5,1500,1,1);

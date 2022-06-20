@@ -5,7 +5,6 @@ import com.codecool.ordersystem.entity.Customer;
 import com.codecool.ordersystem.service.CustomerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.format.annotation.NumberFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -30,10 +29,10 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Customer> findById(@PathVariable @NumberFormat(style = NumberFormat.Style.NUMBER) Long id) {
+    public ResponseEntity<Customer> findById(@PathVariable Long id) {
         Customer customer = customerService.findById(id).orElse(null);
         if (customer == null) {
-            logger.error("Invalid id! " +id);
+            logger.error("Invalid id! " + id);
             return ResponseEntity.badRequest().build();
         } else return ResponseEntity.ok(customer);
     }
@@ -49,9 +48,9 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Customer>  updateCustomer(@Valid  @PathVariable Long id,
-                                                    @RequestBody CustomerDTO customerDTO,
-                                                    BindingResult bindingResult) {
+    public ResponseEntity<Customer> updateCustomer(@Valid @PathVariable Long id,
+                                                   @RequestBody CustomerDTO customerDTO,
+                                                   BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().build();
         }
