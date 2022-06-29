@@ -45,7 +45,7 @@ class ProductServiceTest {
     void testFindProductById() {
         Product product = new Product(1L, "Product1","1234",1000);
         Mockito.when(mockRepository.findById(1L)).thenReturn(Optional.of(product));
-        assertEquals(product, productService.findById(1L));
+        assertEquals(product, productService.findById(1L).get());
     }
 
     @Test

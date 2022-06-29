@@ -29,13 +29,6 @@ public class CustomerTestApplication {
             new Customer(5L, "Buyer3", "33333", "Szeged", "Buyer u.3.")
     };
 
-//    @BeforeEach
-//    void FillData()   {
-//        for (Customer customer : expCustomerArr) {
-//            postCustomerToUrl(customer, url);
-//        }
-//    }
-
     @Test
     void testAddCustomer() {
         Customer customer = new Customer(null, "SellerTeszt", "1234x", "Budapest", "Eladó u.5.");

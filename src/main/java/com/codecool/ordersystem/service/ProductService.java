@@ -6,6 +6,7 @@ import com.codecool.ordersystem.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -19,21 +20,22 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public Product findById(Long id) {
-        return productRepository.findById(id).orElseThrow();
+    public Optional<Product> findById(Long id) {
+        return productRepository.findById(id);
     }
 
     public void deleteById(Long id) {
         productRepository.deleteById(id);
     }
 
-    public void updateProduct(Long id, ProductDTO productDTO) {
-        Product  product = findById(id);
-
-        product.setName(productDTO.getName());
-        product.setEanCode(productDTO.getEanCode());
-        product.setPrice(productDTO.getPrice());
-        productRepository.save(product);
+    public Optional<Product> updateProduct(Long id, ProductDTO productDTO) {
+        Optional<Product>  product = findById(id);
+        if (product.isPresent()) {
+            product.get().setName(productDTO.getName());
+            product.get().setEanCode(productDTO.getEanCode());
+            product.get().setPrice(productDTO.getPrice());
+        } else return product;
+        return Optional.of(productRepository.save(product.get()));
     }
 
     public Product saveProduct(ProductDTO productDTO) {
