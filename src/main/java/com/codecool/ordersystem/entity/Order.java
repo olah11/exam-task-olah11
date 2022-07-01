@@ -1,20 +1,18 @@
 package com.codecool.ordersystem.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonSerialize
 @Table(name = "Orders")
 public class Order {
     @Id
@@ -24,19 +22,19 @@ public class Order {
     private Boolean shipped = false;
 
     @Column(name = "shipping_date")
-    @FutureOrPresent(message = "Shipping date should be present or future time!")
     private LocalDate shippingDate;
 
     @ManyToOne
     @JoinColumn(name = "seller_id")
+    @NotNull(message = "Seller cannot be null")
     private Customer seller;
 
     @ManyToOne
     @JoinColumn(name = "buyer_id")
+    @NotNull(message = "Buyer cannot be null")
     private Customer buyer;
 
-    @OneToMany(mappedBy = "order",
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "order", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     @JsonManagedReference
     private List<OrderItem> orders;
 }

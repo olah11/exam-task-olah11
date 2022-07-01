@@ -1,6 +1,5 @@
 package com.codecool.ordersystem;
 
-import com.codecool.ordersystem.entity.Customer;
 import com.codecool.ordersystem.entity.Product;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ProductTestApplication {
 
+public class ProductTestApplication {
     @Autowired
     private TestRestTemplate testRestTemplate;
 

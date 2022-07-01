@@ -20,8 +20,8 @@ public class Product {
     private Long id;
 
     @Column(length = 100, nullable = false)
-    @Size(min = 1, max = 100, message = "Must be between 1 and 100 characters")
     @NotBlank(message = "Product name is mandatory")
+    @Size(min = 1, max = 100, message = "Must be between 1 and 100 characters")
     private String name;
 
     @Column(length = 13)

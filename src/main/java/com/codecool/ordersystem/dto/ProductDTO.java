@@ -12,8 +12,8 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductDTO {
-    @Size(min = 1, max = 100, message = "Must be between 1 and 100 characters")
     @NotBlank(message = "Product name is mandatory")
+    @Size(min = 1, max = 100, message = "Must be between 1 and 100 characters")
     private String name;
     @Size(min = 0, max = 13, message = "Must be between 0 and 13 characters")
     private String eanCode;

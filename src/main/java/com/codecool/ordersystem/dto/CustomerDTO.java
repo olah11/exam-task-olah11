@@ -16,8 +16,8 @@ public class CustomerDTO {
     @NotNull(message = "Zipcode cannot be null")
     @Size(min = 0, max = 8, message = "Must be between 0 and 8 characters")
     private String zipCode;
-    @Size(min = 2, max = 40, message = "Must be between 1 and 40 characters")
     @NotNull(message = "City cannot be null")
+    @Size(min = 2, max = 40, message = "Must be between 2 and 40 characters")
     private String city;
     @NotNull(message = "Address cannot be null")
     @Size(min = 0, max = 80, message = "Must be between 0 and 80 characters")
