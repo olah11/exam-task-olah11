@@ -14,6 +14,7 @@ insert into orders ( date, shipped, shipping_date,seller_id,buyer_id) values ('2
 insert into orders ( date, shipped, shipping_date,seller_id,buyer_id) values ('2022-07-01',false,null,2,3);
 
 
+
 insert into orderitems ( quantity, selling_price, order_id,product_id) values ( 1,1500,1,1);
 insert into orderitems ( quantity, selling_price, order_id,product_id) values ( 2,2000,2,2);
 insert into orderitems ( quantity, selling_price, order_id,product_id) values ( 3,2200,2,3);

@@ -1,31 +1,20 @@
 package com.codecool.ordersystem.service;
 
-import com.codecool.ordersystem.dto.OrderDTO;
-import com.codecool.ordersystem.dto.OrderItemDTO;
-import com.codecool.ordersystem.dto.OrderItemResponseDTO;
-import com.codecool.ordersystem.dto.OrderResponseDTO;
+import com.codecool.ordersystem.dto.*;
 import com.codecool.ordersystem.entity.Order;
 import com.codecool.ordersystem.entity.OrderItem;
-import com.codecool.ordersystem.repository.CustomerRepository;
-import com.codecool.ordersystem.repository.OrderItemRepositpry;
-import com.codecool.ordersystem.repository.OrderRepository;
-import com.codecool.ordersystem.repository.ProductRepository;
+import com.codecool.ordersystem.repository.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
+import java.util.*;
 @Service
 public class OrderService {
     private OrderRepository orderRepository;
     private ProductRepository productRepository;
     private OrderItemRepositpry orderItemRepository;
     private CustomerRepository customerRepository;
-
-    public OrderService(OrderRepository orderRepository, ProductRepository productRepository,
-                        OrderItemRepositpry orderItemRepository, CustomerRepository customerRepository) {
+        public OrderService(OrderRepository orderRepository, ProductRepository productRepository, OrderItemRepositpry orderItemRepository, CustomerRepository customerRepository) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
         this.orderItemRepository = orderItemRepository;
@@ -184,5 +173,27 @@ public class OrderService {
             orderOpt.get().setShippingDate(LocalDate.now());
             return Optional.of(getOrderResponseDTO(orderRepository.save(orderOpt.get())));
         } else return Optional.empty();
+    }
+
+    public List<OrderSumDTO> findBuyerSum(Long id) {
+        List<OrderSumDTO> orderSum = new ArrayList<>();
+        List<Order> orders;
+        if (id == 0)  orders = orderRepository.findBuyerSum();
+        else orders = orderRepository.findBuyerSumById(id);
+        Map<Long, OrderSumDTO> orderSumDTOMap = new HashMap<>();
+        for (Order o : orders) {
+            double sum = o.getOrders().stream().mapToDouble(oi->oi.getSellingPrice()*oi.getQuantity()).sum();
+            if (orderSumDTOMap.containsKey(o.getBuyer().getId())) {
+                OrderSumDTO orderSumValue = orderSumDTOMap.get(o.getBuyer().getId());
+                orderSumValue.setSum(orderSumValue.getSum()+sum);
+                orderSumDTOMap.put(o.getBuyer().getId(),orderSumValue);
+            } else {
+                orderSumDTOMap.put(o.getBuyer().getId(), new OrderSumDTO(o.getBuyer().getId(),o.getBuyer().getName(),sum));
+            }
+        }
+        for (Map.Entry<Long, OrderSumDTO> longOrderSumDTOEntry : orderSumDTOMap.entrySet()) {
+            orderSum.add(longOrderSumDTOEntry.getValue());
+        }
+        return orderSum;
     }
 }

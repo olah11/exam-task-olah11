@@ -29,6 +29,7 @@ public class CustomerTestApplication {
             new Customer(5L, "Buyer3", "33333", "Szeged", "Buyer u.3.")
     };
 
+
     @Test
     void testAddCustomer() {
         Customer customer = new Customer(null, "SellerTeszt", "1234x", "Budapest", "Eladó u.5.");
@@ -46,6 +47,15 @@ public class CustomerTestApplication {
     }
 
     @Test
+    void testDeleteById() {
+        testRestTemplate.delete(url + "/" + expCustomerArr[expCustomerArr.length - 1].getId());
+        ResponseEntity<Customer[]> responseEntity = testRestTemplate.getForEntity(url, Customer[].class);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        Customer[] deletedArray = Arrays.copyOfRange(expCustomerArr, 0, expCustomerArr.length - 1);
+        assertArraysHasSameElements(deletedArray, responseEntity.getBody());
+    }
+
+    @Test
     void testFindAll() {
         ResponseEntity<Customer[]> responseEntity = testRestTemplate.getForEntity(url, Customer[].class);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
@@ -58,15 +68,6 @@ public class CustomerTestApplication {
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         Customer customerAct = responseEntity.getBody();
         assertEquals(expCustomerArr[1], customerAct);
-    }
-
-    @Test
-    void testDeleteById() {
-        testRestTemplate.delete(url + "/" + expCustomerArr[expCustomerArr.length - 1].getId());
-        ResponseEntity<Customer[]> responseEntity = testRestTemplate.getForEntity(url, Customer[].class);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        Customer[] deletedArray = Arrays.copyOfRange(expCustomerArr, 0, expCustomerArr.length - 1);
-        assertArraysHasSameElements(deletedArray, responseEntity.getBody());
     }
 
     private void assertArraysHasSameElements(Customer[] expectedArr, Customer[] actualArr) {

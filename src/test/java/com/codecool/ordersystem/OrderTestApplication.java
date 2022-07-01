@@ -1,9 +1,6 @@
 package com.codecool.ordersystem;
 
-import com.codecool.ordersystem.dto.OrderDTO;
-import com.codecool.ordersystem.dto.OrderItemDTO;
-import com.codecool.ordersystem.dto.OrderItemResponseDTO;
-import com.codecool.ordersystem.dto.OrderResponseDTO;
+import com.codecool.ordersystem.dto.*;
 import com.codecool.ordersystem.entity.Customer;
 import com.codecool.ordersystem.entity.OrderItem;
 import com.codecool.ordersystem.entity.Product;
@@ -35,26 +32,26 @@ public class OrderTestApplication {
                     new Customer(1L, "Seller1", "1234", "Budapest", "Eladó u.1."),
                     new Customer(3L, "Buyer1", "B-1425", "Hatvan", "Buyer u.1."),
                     Arrays.asList(
-                            new OrderItemResponseDTO(1L, 1, 1500.0D,
-                                    new Product(1L, "Product1", "1234", 1000))
+                            new OrderItemResponseDTO(1L,1,1500.0D,
+                                    new Product(1L, "Product1","1234",1000))
                     )
             ),
             new OrderResponseDTO(2L, LocalDate.parse("2022-06-21"), false, null,
                     new Customer(1L, "Seller1", "1234", "Budapest", "Eladó u.1."),
                     new Customer(4L, "Buyer2", "B-5127", "Miskolc", "Buyer u.2."),
                     Arrays.asList(
-                            new OrderItemResponseDTO(2L, 2, 2000.0D,
-                                    new Product(2L, "Product2", "221234", 2000)),
-                            new OrderItemResponseDTO(3L, 3, 2200.0D,
-                                    new Product(3L, "Product3", "33331234", 3000))
+                            new OrderItemResponseDTO(2L,2,2000.0D,
+                                    new Product(2L, "Product2","221234",2000)),
+                            new OrderItemResponseDTO(3L,3,2200.0D,
+                                    new Product(3L, "Product3","33331234",3000))
                     )
             ),
-            new OrderResponseDTO(3L, LocalDate.parse("2022-07-01"), false, null,
+            new OrderResponseDTO(3L, LocalDate.parse("2022-07-01"), false,  null,
                     new Customer(2L, "Seller2", "2222", "Budapest", "Eladó u.2."),
                     new Customer(3L, "Buyer1", "B-1425", "Hatvan", "Buyer u.1."),
                     Arrays.asList(
-                            new OrderItemResponseDTO(4L, 3, 3000.0D,
-                                    new Product(2L, "Product2", "221234", 2000))
+                            new OrderItemResponseDTO(4L,3,3000.0D,
+                                    new Product(2L, "Product2","221234",2000))
                     )
             )
     };
@@ -62,17 +59,17 @@ public class OrderTestApplication {
     @Test
     void testAddCustomer() {
         OrderDTO order = new OrderDTO(
-                LocalDate.parse("2022-05-21"), false, null, 1L, 3L,
+                LocalDate.parse("2022-05-21"), false, null,1L,3L,
                 Arrays.asList(
-                        new OrderItemDTO(1L, 1, 1500.0D, 1L)
-                ));
+                        new OrderItemDTO(1L,1,1500.0D,1L)
+        ));
         OrderResponseDTO orderResponseDTO = new OrderResponseDTO(
                 4L, LocalDate.parse("2022-05-21"), false, null,
                 new Customer(1L, "Seller1", "1234", "Budapest", "Eladó u.1."),
                 new Customer(3L, "Buyer1", "B-1425", "Hatvan", "Buyer u.1."),
                 Arrays.asList(
-                        new OrderItemResponseDTO(5L, 1, 1500.0D,
-                                new Product(1L, "Product1", "1234", 1000))
+                        new OrderItemResponseDTO(5L,1,1500.0D,
+                                new Product(1L, "Product1","1234",1000))
                 )
         );
         postOrderToUrl(order, url);
@@ -84,7 +81,7 @@ public class OrderTestApplication {
         ResponseEntity<OrderResponseDTO[]> responseEntity = testRestTemplate.getForEntity(url, OrderResponseDTO[].class);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertArraysHasSameElements(newOrderArr, responseEntity.getBody());
-        testRestTemplate.delete(url + "/" + 4L);
+       testRestTemplate.delete(url + "/" + 4L);
     }
 
     @Test
@@ -102,6 +99,39 @@ public class OrderTestApplication {
         assertEquals(expOrderArr[1], orderAct);
     }
 
+
+    @Test
+    void testFindProduct() {
+        ResponseEntity<OrderResponseDTO[]> responseEntity = testRestTemplate.getForEntity(url+"/1/product", OrderResponseDTO[].class);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        OrderResponseDTO[] expOrderProductArr =  new OrderResponseDTO[] { expOrderArr[0] };
+        assertArraysHasSameElements(expOrderProductArr, responseEntity.getBody());
+    }
+
+    @Test
+    void testOrderToShip() {
+        ResponseEntity<OrderResponseDTO[]> responseEntity = testRestTemplate.getForEntity(url+"/toship", OrderResponseDTO[].class);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        OrderResponseDTO[] expOrderProductArr =  new OrderResponseDTO[] {expOrderArr[1],expOrderArr[2]};
+        assertArraysHasSameElements(expOrderProductArr, responseEntity.getBody());
+    }
+
+    @Test
+    void testOrderByBuyer() {
+        ResponseEntity<OrderResponseDTO[]> responseEntity = testRestTemplate.getForEntity(url+"/3/buyer", OrderResponseDTO[].class);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        OrderResponseDTO[] expOrderProductArr =  new OrderResponseDTO[] {expOrderArr[0],expOrderArr[2]};
+        assertArraysHasSameElements(expOrderProductArr, responseEntity.getBody());
+    }
+
+    @Test
+    void testBuyerSum() {
+        OrderSumDTO[] expected = {new OrderSumDTO(3L,"Buyer1",1500D)};
+        ResponseEntity<OrderSumDTO[]> responseEntity = testRestTemplate.getForEntity(url + "/buyersum", OrderSumDTO[].class);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertSumArraysHasSameElements(expected, responseEntity.getBody());
+    }
+
     @Test
     void testDeleteById() {
         testRestTemplate.delete(url + "/" + expOrderArr[expOrderArr.length - 1].getId());
@@ -114,7 +144,13 @@ public class OrderTestApplication {
     private void assertArraysHasSameElements(OrderResponseDTO[] expectedArr, OrderResponseDTO[] actualArr) {
         List<OrderResponseDTO> expected = Arrays.asList(expectedArr);
         List<OrderResponseDTO> actual = Arrays.asList(actualArr);
+        assertTrue(expected.size() == actual.size() && expected.containsAll(actual)
+                && actual.containsAll(expected));
+    }
 
+    private void assertSumArraysHasSameElements(OrderSumDTO[] expectedArr, OrderSumDTO[] actualArr) {
+        List<OrderSumDTO> expected = Arrays.asList(expectedArr);
+        List<OrderSumDTO> actual = Arrays.asList(actualArr);
         assertTrue(expected.size() == actual.size() && expected.containsAll(actual)
                 && actual.containsAll(expected));
     }

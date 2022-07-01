@@ -2,6 +2,7 @@ package com.codecool.ordersystem.controller;
 
 import com.codecool.ordersystem.dto.OrderDTO;
 import com.codecool.ordersystem.dto.OrderResponseDTO;
+import com.codecool.ordersystem.dto.OrderSumDTO;
 import com.codecool.ordersystem.service.OrderService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,6 +53,12 @@ public class OrderController {
         return orderService.findBySellerId(id);
     }
 
+    @GetMapping("/buyersum")
+    @Operation(summary = "Summing order value by buyer", description = "Get list of ordered value by buyer - parameter(optional) buyerId")
+    public List<OrderSumDTO> findBySellerSum(@RequestParam(name = "buyerId", defaultValue = "0") Long id) {
+        return orderService.findBuyerSum(id);
+    }
+
     @GetMapping("/{productId}/product")
     @Operation(summary = "Get orders by product", description =
             "Get list of orders contains product - required: productId ")
@@ -81,7 +88,6 @@ public class OrderController {
         }
         return ResponseEntity.ok(orderService.saveOrder(orderDTO));
     }
-
 
     @PutMapping("/{id}")
     @Operation(summary = "Update an order", description = "Update an order - required: orderId, orderDTO")
