@@ -15,11 +15,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 @OpenAPIDefinition(
-        info = @Info(title = "Order System",version = "1.0",description = "Ensure data for Order System")
+        info = @Info(title = "Order System", version = "1.0", description = "Ensure data for Order System")
 )
 @RestController
 @RequestMapping("/orders")
@@ -42,7 +43,7 @@ public class OrderController {
     public ResponseEntity<?> findById(@PathVariable Long id) {
         Optional<OrderResponseDTO> order = orderService.findById(id);
         if (order.isEmpty()) {
-            logger.error("Not found: " +id);
+            logger.error("Not found: " + id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found! " + id);
         } else return ResponseEntity.ok(order);
     }
@@ -80,29 +81,45 @@ public class OrderController {
 
     @PostMapping
     @Operation(summary = "Save a new order", description = "Save a new order - required: orderDTO")
-    public ResponseEntity<?> saveOrder(@RequestBody @Valid  OrderDTO orderDTO,
-                                      BindingResult bindingResult) {
+    public ResponseEntity<?> saveOrder(@RequestBody @Valid OrderDTO orderDTO,
+                                       BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            logger.error("Save error! Invalid customer data!");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Order data error! ");
+            logger.error("Save error! Invalid order data! " +
+                    Arrays.toString(bindingResult.getFieldErrors().stream().toArray()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Order data error! " +
+                    bindingResult.getFieldError().getField() + ":  " +
+                    bindingResult.getFieldError().getDefaultMessage().toString());
         }
-        return ResponseEntity.ok(orderService.saveOrder(orderDTO));
+        try {
+            return ResponseEntity.ok(orderService.saveOrder(orderDTO));
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Order data error! " + e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update an order", description = "Update an order - required: orderId, orderDTO")
-    public ResponseEntity<?> updateOrder(@PathVariable Long id, @RequestBody  @Valid OrderDTO orderDTO,
+    public ResponseEntity<?> updateOrder(@PathVariable Long id, @RequestBody @Valid OrderDTO orderDTO,
                                          BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            logger.error("Update error! Invalid order data!");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Order data error! " + id);
+            logger.error("Update error! Invalid order data! " +
+                    Arrays.toString(bindingResult.getFieldErrors().stream().toArray()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Order data error! " +
+                    bindingResult.getFieldError().getField() + ":  " +
+                    bindingResult.getFieldError().getDefaultMessage().toString());
         }
-        Optional<OrderResponseDTO> order = orderService.updateOrder(id, orderDTO);
-        if (order.isEmpty()) {
-            logger.error("Update error! Order data error!");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Order data error! " + id);
+        try {
+            Optional<OrderResponseDTO> order = orderService.updateOrder(id, orderDTO);
+            if (order.isEmpty()) {
+                logger.error("Update error! Order not found!" + id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found! " + id);
+            }
+            return ResponseEntity.ok(order.get());
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Order data error! " + e.getMessage());
         }
-        return ResponseEntity.ok(order.get());
     }
 
     @PutMapping("/{orderId}/shipping")
@@ -110,7 +127,7 @@ public class OrderController {
     public ResponseEntity<?> shippingOrder(@PathVariable(name = "orderId") Long id) {
         Optional<OrderResponseDTO> order = orderService.shippingOrder(id);
         if (order.isEmpty()) {
-            logger.error("Update error! Order not found!");
+            logger.error("Update error! Order not found! " + id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found! " + id);
         }
         return ResponseEntity.ok(order.get());
@@ -121,9 +138,9 @@ public class OrderController {
     public ResponseEntity<?> deleteById(@PathVariable Long id) {
         try {
             orderService.deleteById(id);
-            return ResponseEntity.ok("Order succesfully deleted! " +id);
+            return ResponseEntity.ok("Order succesfully deleted! " + id);
         } catch (Exception e) {
-            logger.error("Delete error!! " +id + "  " + e.getMessage());
+            logger.error("Delete error!! " + id + "  " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Order delete error! " + id);
         }
     }

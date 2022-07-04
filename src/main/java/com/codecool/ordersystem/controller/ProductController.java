@@ -12,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,7 +38,7 @@ public class ProductController {
     public ResponseEntity<?> findById(@PathVariable Long id) {
         Optional<Product> productOpt = productService.findById(id);
         if (productOpt.isEmpty()) {
-            logger.error("Not found: " +id);
+            logger.error("Not found: " + id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found! " + id);
         } else return ResponseEntity.ok(productOpt.get());
     }
@@ -45,21 +46,27 @@ public class ProductController {
     @PostMapping
     @Operation(summary = "Save a new product", description = "Save a new product - required: productDTO")
     public ResponseEntity<?> saveProduct(@RequestBody @Valid ProductDTO productDTO,
-                                               BindingResult bindingResult ) {
+                                         BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            logger.error("Save error! Invalid product data!");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Product data error! ");
+            logger.error("Save error! Invalid product data! " +
+                    Arrays.toString(bindingResult.getFieldErrors().stream().toArray()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Product data error! " +
+                    bindingResult.getFieldError().getField() + ":  " +
+                    bindingResult.getFieldError().getDefaultMessage().toString());
         }
         return ResponseEntity.ok(productService.saveProduct(productDTO));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update a product", description = "Update a product - required: productId, productDTO")
-    public ResponseEntity<?>  updateProduct(@PathVariable Long id, @RequestBody @Valid ProductDTO productDTO,
-                                            BindingResult bindingResult) {
+    public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody @Valid ProductDTO productDTO,
+                                           BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            logger.error("Update erro! Invalid product data!");
-            return ResponseEntity.badRequest().build();
+            logger.error("Update error! Invalid product data! " +
+                    Arrays.toString(bindingResult.getFieldErrors().stream().toArray()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Product data error! " +
+                    bindingResult.getFieldError().getField() + ":  " +
+                    bindingResult.getFieldError().getDefaultMessage().toString());
         }
         Optional<Product> productOpt = productService.updateProduct(id, productDTO);
         if (productOpt.isEmpty()) {
@@ -71,12 +78,12 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a product", description = "Delete a product - required: productId")
-    public ResponseEntity<?>  deleteById(@PathVariable Long id) {
+    public ResponseEntity<?> deleteById(@PathVariable Long id) {
         try {
             productService.deleteById(id);
-            return ResponseEntity.ok("Product succesfully deleted! " +id);
+            return ResponseEntity.ok("Product succesfully deleted! " + id);
         } catch (Exception e) {
-            logger.error("Delete error!! " +id + "  " + e.getMessage());
+            logger.error("Delete error!! " + id + "  " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Delete error! " + id);
         }
     }

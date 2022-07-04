@@ -29,12 +29,13 @@ public class ProductService {
     }
 
     public Optional<Product> updateProduct(Long id, ProductDTO productDTO) {
-        Optional<Product>  product = findById(id);
-        if (product.isPresent()) {
-            product.get().setName(productDTO.getName());
-            product.get().setEanCode(productDTO.getEanCode());
-            product.get().setPrice(productDTO.getPrice());
-        } else return product;
+        Optional<Product> product = findById(id);
+        if (product.isEmpty()) {
+            return product;
+        }
+        product.get().setName(productDTO.getName());
+        product.get().setEanCode(productDTO.getEanCode());
+        product.get().setPrice(productDTO.getPrice());
         return Optional.of(productRepository.save(product.get()));
     }
 
