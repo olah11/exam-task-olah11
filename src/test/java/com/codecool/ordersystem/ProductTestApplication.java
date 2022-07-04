@@ -14,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-
 public class ProductTestApplication {
     @Autowired
     private TestRestTemplate testRestTemplate;
@@ -22,15 +21,15 @@ public class ProductTestApplication {
     private String url = "/product";
 
     Product[] expProductArr = {
-            new Product(1L, "Product1","1234",1000),
-            new Product(2L, "Product2","221234",2000 ),
-            new Product(3L, "Product3","33331234",3000 ),
-            new Product(4L, "Product4","43331444",4000 )
+            new Product(1L, "Product1", "1234", 1000),
+            new Product(2L, "Product2", "221234", 2000),
+            new Product(3L, "Product3", "33331234", 3000),
+            new Product(4L, "Product4", "43331444", 4000)
     };
 
     @Test
     void testAddProduct() {
-        Product product = new Product(null, "Product5","55555555",5000 );
+        Product product = new Product(null, "Product5", "55555555", 5000);
         postProductToUrl(product, url);
         Product[] newProductArr = new Product[expProductArr.length + 1];
         for (int i = 0; i < expProductArr.length; i++) {

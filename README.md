@@ -1,9 +1,10 @@
 # Order System (Backend)
 
-Egy rendelési rendszer "frontend"-jének a kiszolgálását teszi lehetőve a program."
+Egy rendelési rendszer "frontend"-jének a kiszolgálását teszi lehetőve a program. Vevők/eladók, termékek, valamint a rendelések adatainal nyilvántartását teszi lehetővé."
+
 A program Docker konténerben fut.
 ## A program inditása:
-###    ./StartApp.bat  - Windows operációs rendszer estén.
+###    ./StartApp.bat  vagy StartApp.bat - Windows operációs rendszer estén.
 ###    ./StartApp.sh   - Linux operációs rendszer estén.
 Ekkor megtörténik a program fordítása, illetve a Docker konténerben elindul a program. A 8080-as porton várja a hívásokat.
 
@@ -19,9 +20,9 @@ Ekkor megtörténik a program fordítása, illetve a Docker konténerben elindul
 - CustomerDTO: vevő beérkező adatok
 - ProductDTO: termék beérkező adatok
 - OrderDTO: rendelés beérkező adatok
-- OrderItemDTO: rendelés tétel beérkező adatok
+- OrderItemDTO: rendelés tétel adatok OrderDTO-hoz
 - OrderResponseDTO: rendelés válasz adatok
-- OrderItemResponseDTO: rendelés tétel válasz adatok
+- OrderItemResponseDTO: rendelés tétel adatok OrderResponseDTO-hoz
 - OrderSumDTO: rendelés érték szerinti összesítő válasz adatok vevőnként
 
 ## Entity-k (Entitások)
@@ -60,9 +61,15 @@ Ekkor megtörténik a program fordítása, illetve a Docker konténerben elindul
 ## Teszt 
 A program 2 Unit tesztet tartalmaz (Customer, Product), illetve 3 integrációs tesztet (Customer, Product, Order).
 
-Indításuk: mvn test
+Indítás:
 
-Az alkalmazás futtatása után a Swagger segítségével minden végpont tesztelhető.
+./OrderTest.bat vagy OrderTest.bat (Windows)
+
+./OrderTest.sh (Linux)   
+
+Swagger segítségével minden végpont tesztelhető.
 
 Indítás: http://localhost:8080/swagger-ui.html
+
+Postman alkalmazás segítségével a végpontok szintén tesztelhetőek.
 
